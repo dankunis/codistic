@@ -1,7 +1,8 @@
 import com.intellij.uiDesigner.core.Spacer;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import java.awt.Insets;
+
+import com.intellij.util.ui.JBUI;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
@@ -61,12 +62,12 @@ public class SelectMethodDialog extends JDialog
     private List<ArrayList<String>> dataset;
 
     public SelectMethodDialog() {
-        this.$$$setupUI$$$();
+        this.setupUI();
         this.dataset = new ArrayList<ArrayList<String>>();
         this.setContentPane(this.contentPane);
         this.setModal(true);
         this.getRootPane().setDefaultButton(this.buttonOK);
-        this.setTitle("\u7edf\u8ba1\u51fd\u6570\u4e2a\u6570");
+        this.setTitle("Функции");
         this.setSize(1000, 800);
         this.setLocationRelativeTo(null);
         this.downloadButton.addActionListener(new ActionListener() {
@@ -137,7 +138,7 @@ public class SelectMethodDialog extends JDialog
         rowData.add("");
         rowData.add("");
         rowData.add("Всего:" + SelectMethodDialog.sumMethod + "функции");
-        this.dataset.add((ArrayList)rowData);
+        this.dataset.add((ArrayList<String>)rowData);
         this.table.setModel(this.tableModel);
         this.table.setRowHeight(30);
         final JTableHeader tableHeader = this.table.getTableHeader();
@@ -190,7 +191,7 @@ public class SelectMethodDialog extends JDialog
                     final List<String> rowData = new ArrayList<String>();
                     rowData.add(String.valueOf(SelectMethodDialog.number));
                     rowData.add(file.getName());
-                    this.dataset.add((ArrayList)rowData);
+                    this.dataset.add((ArrayList<String>)rowData);
                     sonArr.add(file.getName());
                     while ((s = br.readLine()) != null) {
                         ++line;
@@ -204,7 +205,7 @@ public class SelectMethodDialog extends JDialog
                             rowDataModel.add("");
                             rowDataModel.add(matcher.group(2));
                             rowDataModel.add(line + " строчка");
-                            this.dataset.add((ArrayList)rowDataModel);
+                            this.dataset.add((ArrayList<String>)rowDataModel);
                         }
                         if (line % 50 == 0) {
                             sonArr.add(String.valueOf(methodNum));
@@ -229,7 +230,7 @@ public class SelectMethodDialog extends JDialog
                 rowDataNum.add("");
                 rowDataNum.add("");
                 rowDataNum.add(String.valueOf(methodNum));
-                this.dataset.add((ArrayList)rowDataNum);
+                this.dataset.add((ArrayList<String>)rowDataNum);
                 ++SelectMethodDialog.sumFile;
                 SelectMethodDialog.sumMethod += methodNum;
                 if (methodNum != 0 && sonArr.size() > 1 && methodNum != Integer.parseInt(sonArr.get(sonArr.size() - 1))) {
@@ -253,7 +254,7 @@ public class SelectMethodDialog extends JDialog
                     final List<String> rowData = new ArrayList<String>();
                     rowData.add(String.valueOf(SelectMethodDialog.number));
                     rowData.add(file.getName());
-                    this.dataset.add((ArrayList)rowData);
+                    this.dataset.add((ArrayList<String>)rowData);
                     sonArr.add(file.getName());
                     while ((s = br.readLine()) != null) {
                         ++line;
@@ -267,7 +268,7 @@ public class SelectMethodDialog extends JDialog
                             rowDataModel.add("");
                             rowDataModel.add(matcher.group(1));
                             rowDataModel.add(line + " строчка");
-                            this.dataset.add((ArrayList)rowDataModel);
+                            this.dataset.add((ArrayList<String>)rowDataModel);
                         }
                         if (line % 50 == 0) {
                             sonArr.add(String.valueOf(methodNum));
@@ -292,7 +293,7 @@ public class SelectMethodDialog extends JDialog
                 rowDataNum.add("");
                 rowDataNum.add("");
                 rowDataNum.add(String.valueOf(methodNum));
-                this.dataset.add((ArrayList)rowDataNum);
+                this.dataset.add((ArrayList<String>)rowDataNum);
                 ++SelectMethodDialog.sumFile;
                 SelectMethodDialog.sumMethod += methodNum;
                 if (methodNum != 0 && sonArr.size() > 1 && methodNum != Integer.parseInt(sonArr.get(sonArr.size() - 1))) {
@@ -312,32 +313,37 @@ public class SelectMethodDialog extends JDialog
         if (file.isFile() && file.getName().endsWith(".java")) {
             int line = 0;
             int methodNum = 0;
-            final ArrayList<String> sonArr = new ArrayList<String>();
-            BufferedReader br = null;
-            final Pattern pattern = Pattern.compile("^[ \\t]*(public |protected |private |static)(.*)\\([^;]*$");
+            ArrayList<String> sonArr = new ArrayList<String>();
+            Pattern pattern = Pattern.compile("^[ \\t]*(public |protected |private |static)(.*)\\([^;]*$");
+
             try {
-                br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "utf-8"));
+                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "utf-8"));
+                ArrayList<String> rowData = new ArrayList<String>();
                 String s = null;
+
                 ++SelectMethodDialog.number;
                 this.tableModel.addRow(new Object[] { SelectMethodDialog.number, file.getName() });
-                final List<String> rowData = new ArrayList<String>();
                 rowData.add(String.valueOf(SelectMethodDialog.number));
                 rowData.add(file.getName());
-                this.dataset.add((ArrayList)rowData);
+                this.dataset.add(rowData);
                 sonArr.add(file.getName());
+
                 while ((s = br.readLine()) != null) {
                     ++line;
-                    final Matcher matcher = pattern.matcher(s);
+                    Matcher matcher = pattern.matcher(s);
+
                     if (matcher.find()) {
                         ++methodNum;
                         ++SelectMethodDialog.number;
                         this.tableModel.addRow(new Object[] { SelectMethodDialog.number, "", matcher.group(2), line });
-                        final List<String> rowDataModel = new ArrayList<String>();
+
+                        ArrayList<String> rowDataModel = new ArrayList<String>();
+
                         rowDataModel.add(String.valueOf(SelectMethodDialog.number));
                         rowDataModel.add("");
                         rowDataModel.add(matcher.group(2));
                         rowDataModel.add(line + " строчка");
-                        this.dataset.add((ArrayList)rowDataModel);
+                        this.dataset.add(rowDataModel);
                     }
                     if (line % 50 == 0) {
                         sonArr.add(String.valueOf(methodNum));
@@ -345,136 +351,144 @@ public class SelectMethodDialog extends JDialog
                 }
                 br.close();
             }
-            catch (UnsupportedEncodingException e) {
+            catch (IOException e) {
                 e.printStackTrace();
             }
-            catch (FileNotFoundException e2) {
-                e2.printStackTrace();
-            }
-            catch (IOException e3) {
-                e3.printStackTrace();
-            }
+
             ++SelectMethodDialog.number;
             this.tableModel.addRow(new Object[] { SelectMethodDialog.number, "", "", "", methodNum });
-            final List<String> rowDataNum = new ArrayList<String>();
+
+            ArrayList<String> rowDataNum = new ArrayList<String>();
+
             rowDataNum.add(String.valueOf(SelectMethodDialog.number));
             rowDataNum.add("");
             rowDataNum.add("");
             rowDataNum.add("");
             rowDataNum.add(String.valueOf(methodNum));
-            this.dataset.add((ArrayList)rowDataNum);
+            this.dataset.add(rowDataNum);
             ++SelectMethodDialog.sumFile;
             SelectMethodDialog.sumMethod += methodNum;
+
             if (methodNum != 0 && sonArr.size() > 1 && methodNum != Integer.parseInt(sonArr.get(sonArr.size() - 1))) {
                 sonArr.add(String.valueOf(methodNum));
             }
-            if (sonArr != null && sonArr.size() > 0) {
+            if (sonArr.size() > 0) {
                 SelectMethodDialog.arr.add(sonArr);
             }
         }
         else if (file.isFile() && file.getName().endsWith(".py")) {
             int line = 0;
             int methodNum = 0;
-            final ArrayList<String> sonArr = new ArrayList<String>();
-            BufferedReader br = null;
-            final Pattern pattern = Pattern.compile("^[ \\t]*def(.*)\\([^;]*$");
+            ArrayList<String> sonArr = new ArrayList<String>();
+            Pattern pattern = Pattern.compile("^[ \\t]*def(.*)\\([^;]*$");
+
             try {
-                br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "utf-8"));
+                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "utf-8"));
+                ArrayList<String> rowData = new ArrayList<String>();
                 String s = null;
+
                 ++SelectMethodDialog.number;
                 this.tableModel.addRow(new Object[] { SelectMethodDialog.number, file.getName() });
-                final List<String> rowData = new ArrayList<String>();
                 rowData.add(String.valueOf(SelectMethodDialog.number));
                 rowData.add(file.getName());
-                this.dataset.add((ArrayList)rowData);
+                this.dataset.add(rowData);
                 sonArr.add(file.getName());
+
                 while ((s = br.readLine()) != null) {
                     ++line;
-                    final Matcher matcher = pattern.matcher(s);
+                    Matcher matcher = pattern.matcher(s);
+
                     if (matcher.find()) {
                         ++methodNum;
                         ++SelectMethodDialog.number;
                         this.tableModel.addRow(new Object[] { SelectMethodDialog.number, "", matcher.group(1), line });
-                        final List<String> rowDataModel = new ArrayList<String>();
+
+                        ArrayList<String> rowDataModel = new ArrayList<String>();
+
                         rowDataModel.add(String.valueOf(SelectMethodDialog.number));
                         rowDataModel.add("");
                         rowDataModel.add(matcher.group(1));
                         rowDataModel.add(line + " строчка");
-                        this.dataset.add((ArrayList)rowDataModel);
+                        this.dataset.add(rowDataModel);
                     }
                     if (line % 50 == 0) {
                         sonArr.add(String.valueOf(methodNum));
                     }
                 }
                 br.close();
-            }
-            catch (UnsupportedEncodingException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
-            catch (FileNotFoundException e2) {
-                e2.printStackTrace();
-            }
-            catch (IOException e3) {
-                e3.printStackTrace();
-            }
+
             ++SelectMethodDialog.number;
             this.tableModel.addRow(new Object[] { SelectMethodDialog.number, "", "", "", methodNum });
-            final List<String> rowDataNum = new ArrayList<String>();
+
+            ArrayList<String> rowDataNum = new ArrayList<String>();
+
             rowDataNum.add(String.valueOf(SelectMethodDialog.number));
             rowDataNum.add("");
             rowDataNum.add("");
             rowDataNum.add("");
             rowDataNum.add(String.valueOf(methodNum));
-            this.dataset.add((ArrayList)rowDataNum);
+            this.dataset.add(rowDataNum);
             ++SelectMethodDialog.sumFile;
             SelectMethodDialog.sumMethod += methodNum;
+
             if (methodNum != 0 && sonArr.size() > 1 && methodNum != Integer.parseInt(sonArr.get(sonArr.size() - 1))) {
                 sonArr.add(String.valueOf(methodNum));
             }
-            if (sonArr != null && sonArr.size() > 0) {
+            if (sonArr.size() > 0) {
                 SelectMethodDialog.arr.add(sonArr);
             }
         }
-        else if (file.isDirectory()) {}
+        else {
+            file.isDirectory();
+        }
     }
 
     private void btnDownload() {
-        final JFileChooser chooser = new JFileChooser();
+        JFileChooser chooser = new JFileChooser();
+        Component parent = null;
+        int returnVal = chooser.showSaveDialog(parent);
+
         chooser.setFileSelectionMode(1);
-        final Component parent = null;
-        final int returnVal = chooser.showSaveDialog(parent);
+
         if (returnVal == 0) {
-            final String selectPath = chooser.getSelectedFile().getPath();
-            final String[] headers = { "Серийный номер", "Имя файла", "Имя функции", "Функциональное положение", "Количество функций" };
-            final File file = new File(selectPath + "//data.xls");
+            String selectPath = chooser.getSelectedFile().getPath();
+            String[] headers = { "Серийный номер", "Имя файла", "Имя функции", "Функциональное положение", "Количество функций" };
+            File file = new File(selectPath + "//data.xls");
+
             if (file.exists()) {
                 JOptionPane.showMessageDialog(null, "Файл уже существует. Пожалуйста, удалите файл и попробуйте снова.");
             }
             else {
-                final ChartPanel cp = new DiscountChartExcel(SelectMethodDialog.arr, selectPath, headers, this.dataset).getChartPanel();
+                new DiscountChartExcel(SelectMethodDialog.arr, selectPath, headers, this.dataset);
                 JOptionPane.showMessageDialog(null, "Экспорт успешно завершен");
             }
         }
     }
 
     public HSSFWorkbook exportExcel(final String title, final String[] headers, final List<ArrayList<String>> dataset, final OutputStream out) {
-        HSSFWorkbook wb = null;
-        if (wb == null) {
-            wb = new HSSFWorkbook();
-        }
-        final HSSFSheet sheet = wb.createSheet(title);
+        HSSFWorkbook wb =  new HSSFWorkbook();
+        HSSFSheet sheet = wb.createSheet(title);
+
         sheet.setColumnWidth(0, 1792);
         sheet.setColumnWidth(1, 12800);
         sheet.setColumnWidth(2, 5120);
         sheet.setColumnWidth(3, 5120);
         sheet.setColumnWidth(4, 5120);
+
         HSSFRow row = sheet.createRow(0);
-        final HSSFFont font = wb.createFont();
-        font.setFontName("\u5b8b\u4f53");
+        HSSFFont font = wb.createFont();
+
+        font.setFontName("Times New Roman");
         font.setFontHeightInPoints((short)15);
-        final HSSFCellStyle style = wb.createCellStyle();
+
+        HSSFCellStyle style = wb.createCellStyle();
+
         style.setAlignment(HorizontalAlignment.CENTER);
         style.setFont(font);
+
         HSSFCell cell = null;
         for (int i = 0; i < headers.length; ++i) {
             cell = row.createCell(i);
@@ -483,10 +497,12 @@ public class SelectMethodDialog extends JDialog
         }
         for (int i = 0; i < dataset.size(); ++i) {
             row = sheet.createRow(i + 1);
+
             for (int j = 0; j < dataset.get(i).size(); ++j) {
                 row.createCell(j).setCellValue((String)dataset.get(i).get(j));
             }
         }
+
         return wb;
     }
 
@@ -499,7 +515,8 @@ public class SelectMethodDialog extends JDialog
     }
 
     public static void main(final String[] args) {
-        final SelectMethodDialog dialog = new SelectMethodDialog();
+        SelectMethodDialog dialog = new SelectMethodDialog();
+
         dialog.pack();
         dialog.setVisible(true);
         System.exit(0);
@@ -512,27 +529,43 @@ public class SelectMethodDialog extends JDialog
         SelectMethodDialog.arr = new ArrayList<ArrayList<String>>();
     }
 
-    private /* synthetic */ void $$$setupUI$$$() {
-        final JPanel contentPane = new JPanel();
-        (this.contentPane = contentPane).setLayout(new GridLayoutManager(2, 1, new Insets(10, 10, 10, 10), -1, -1, false, false));
-        final JPanel comp = new JPanel();
-        comp.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1, false, false));
-        contentPane.add(comp, new GridConstraints(1, 0, 1, 1, 0, 3, 3, 1, null, null, null));
-        comp.add(new Spacer(), new GridConstraints(0, 0, 1, 1, 0, 1, 6, 1, null, null, null));
-        final JPanel comp2 = new JPanel();
-        comp2.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1, false, false));
-        comp.add(comp2, new GridConstraints(0, 1, 1, 1, 0, 3, 3, 3, null, null, null));
-        final JButton button = new JButton();
-        (this.buttonOK = button).setText("OK");
-        comp2.add(button, new GridConstraints(0, 0, 1, 1, 0, 1, 3, 0, null, null, null));
-        final JButton button2 = new JButton();
-        (this.buttonCancel = button2).setText("Cancel");
-        comp2.add(button2, new GridConstraints(0, 1, 1, 1, 0, 1, 3, 0, null, null, null));
-        final JButton button3 = new JButton();
-        (this.downloadButton = button3).setText("скачать");
-        comp2.add(button3, new GridConstraints(0, 2, 1, 1, 0, 1, 3, 0, null, null, null));
-        final JPanel panel = new JPanel();
-        (this.jpanel1 = panel).setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1, false, false));
+    private void setupUI() {
+        JPanel contentPane = new JPanel();
+        JPanel comp = new JPanel();
+        JPanel comp2 = new JPanel();
+        JButton button = new JButton();
+        JButton button2 = new JButton();
+        JButton button3 = new JButton();
+        JPanel panel = new JPanel();
+        this.contentPane = contentPane;
+        this.downloadButton = button3;
+        this.buttonCancel = button2;
+        this.buttonOK = button;
+        this.jpanel1 = panel;
+
+        this.contentPane.setLayout(new GridLayoutManager(2, 1,
+                JBUI.insets(10), -1, -1, false, false));
+        comp.setLayout(new GridLayoutManager(1, 2,
+                JBUI.emptyInsets(), -1, -1, false, false));
+        contentPane.add(comp, new GridConstraints(1, 0, 1, 1, 0, 3,
+                3, 1, null, null, null));
+        comp.add(new Spacer(), new GridConstraints(0, 0, 1, 1,
+                0, 1, 6, 1, null, null, null));
+        comp2.setLayout(new GridLayoutManager(1, 3, JBUI.emptyInsets(),
+                -1, -1, false, false));
+        comp.add(comp2, new GridConstraints(0, 1, 1, 1, 0,
+                3, 3, 3, null, null, null));
+        this.buttonOK.setText("OK");
+        comp2.add(button, new GridConstraints(0, 0, 1, 1, 0, 1,
+                3, 0, null, null, null));
+        this.buttonCancel.setText("Cancel");
+        comp2.add(button2, new GridConstraints(0, 1, 1, 1, 0, 1,
+                3, 0, null, null, null));
+        downloadButton.setText("скачать");
+        comp2.add(button3, new GridConstraints(0, 2, 1, 1, 0, 1,
+                3, 0, null, null, null));
+        this.jpanel1.setLayout(new GridLayoutManager(1, 1, JBUI.emptyInsets(),
+                -1, -1, false, false));
         contentPane.add(panel, new GridConstraints(0, 0, 1, 1, 0, 3, 3, 3, null, null, null));
     }
 }
