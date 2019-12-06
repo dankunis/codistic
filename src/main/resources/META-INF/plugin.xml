@@ -17,8 +17,9 @@
         <!-- Add your actions here -->
         <group id="MyPlugin.SampleMenu" text="Codistic">
             <add-to-group group-id="MainMenu" anchor="last"/>
-            <action id="1" class="SelectMethodAction" text="SelectMethodAction"/>
-            <action id="2" class="RowdataAction" text="RowdataAction"/>
+            <action id="1" class="SelectMethodAction" text="Functions"/>
+            <action id="2" class="RowdataAction" text="CodeLine"/>
+            <action id="3" class="UpdateTimeAction" text="History"/>
         </group>
     </actions>
 </idea-plugin>
