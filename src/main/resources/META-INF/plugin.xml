@@ -15,6 +15,10 @@
 
     <actions>
         <!-- Add your actions here -->
-        <action id="SelectMethodAction" class="SelectMethodAction" text="SelectMethodAction"/>
+        <group id="MyPlugin.SampleMenu" text="Codistic">
+            <add-to-group group-id="MainMenu" anchor="last"/>
+            <action id="1" class="SelectMethodAction" text="SelectMethodAction"/>
+            <action id="2" class="RowdataAction" text="RowdataAction"/>
+        </group>
     </actions>
 </idea-plugin>
